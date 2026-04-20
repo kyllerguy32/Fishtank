@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tank Care Pro</title>
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --bg-card: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+        }
+
+        #app-shell {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top Tabs */
+        .tabs {
+            display: flex;
+            background-color: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 12px;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .tab.active {
+            background: var(--accent-blue);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Header Images */
+        .tank-header {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+
+        .tank-header img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+        }
+
+        .tank-header h1 {
+            position: relative;
+            color: white;
+            font-size: 28px;
+            z-index: 2;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Main Content */
+        .content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .date-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .day-label {
+            color: var(--accent-blue);
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        /* Task Cards */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .task-card:active {
+            transform: scale(0.97);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .icon-box img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .task-desc {
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .warning {
+            color: var(--accent-red);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Checkbox */
+        .checkbox {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .task-card.done {
+            opacity: 0.5;
+            background-color: rgba(30, 41, 59, 0.4);
+            border-color: transparent;
+        }
+
+        .task-card.done .checkbox {
+            background-color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .task-card.done .checkbox::after {
+            content: "✓";
+            color: white;
+            font-weight: 900;
+            font-size: 16px;
+        }
+
+        .task-card.done .task-title {
+            text-decoration: line-through;
+        }
+
+        /* Footer Reset */
+        .reset-section {
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+    </style>
+</head>
+<body>
+
+<div id="app-shell">
+    <div class="tabs">
+        <div class="tab active" onclick="showScreen('shrimp', this)">Shrimp Tank</div>
+        <div class="tab" onclick="showScreen('community', this)">Community Tank</div>
+    </div>
+
+    <div id="shrimp" class="screen active">
+        <div class="tank-header">
+            <img src="https://i.postimg.cc/25Mm73bQ/PXL-20260101-034554303-MP-2.jpg" alt="Shrimp Tank">
+            <h1>Shrimp Tank</h1>
+        </div>
+        <div class="content">
+            <div class="date-container">
+                <span class="day-label" id="date-shrimp">Today</span>
+            </div>
+            <div id="list-shrimp" class="task-list"></div>
+            <div class="reset-section">
+                <button class="btn-reset" onclick="resetDay('shrimp')">Reset Checklist</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="community" class="screen">
+        <div class="tank-header">
+            <img src="https://i.postimg.cc/SxtpmjGr/PXL-20260216-001651871-MP-2.jpg" alt="Community Tank">
+            <h1>Community Tank</h1>
+        </div>
+        <div class="content">
+            <div class="date-container">
+                <span class="day-label" id="date-community">Today</span>
+            </div>
+            <div id="list-community" class="task-list"></div>
+            <div class="reset-section">
+                <button class="btn-reset" onclick="resetDay('community')">Reset Checklist</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const IMG = {
+        bucket: 'https://i.postimg.cc/4yMzJ6mg/bucket.png',
+        filter: 'https://i.postimg.cc/fyFxwcJM/filter.png',
+        fish: 'https://i.postimg.cc/BbyxqTX4/fish.png',
+        glass: 'https://i.postimg.cc/vTDrFqHT/glass.png',
+        shrimp_icon: 'https://i.postimg.cc/pryfbGXd/shrimp.png',
+        spray: 'https://i.postimg.cc/j29zsHLr/spray.png',
+        worm: 'https://i.postimg.cc/D0Dq2r8F/worm.png',
+        ziplock: 'https://i.postimg.cc/wM3X8fTv/ziplock.png'
+    };
+
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const now = new Date();
+    const dayIndex = now.getDay();
+    const dayName = days[dayIndex];
+
+    document.getElementById('date-shrimp').innerText = dayName;
+    document.getElementById('date-community').innerText = dayName;
+
+    function renderTasks() {
+        const shrimpList = document.getElementById('list-shrimp');
+        const communityList = document.getElementById('list-community');
+        
+        let sHtml = "";
+        let cHtml = "";
+
+        // --- Shrimp Logic ---
+        // Everyday
+        sHtml += taskItem('s1', 'White Food', '1-2 pieces. Wait if yesterday\'s are visible.', IMG.glass, 'Check before adding');
+        // Tue & Fri
+        if(dayIndex === 2 || dayIndex === 5) sHtml += taskItem('s2', 'Fertilizer', 'Half squirt of the big white bottle.', IMG.spray);
+        // Sun
+        if(dayIndex === 0) sHtml += taskItem('s3', 'Water Change', 'Perform a 30% water change.', IMG.bucket);
+
+        // --- Community Logic ---
+        if(dayIndex === 0) {
+            // Sunday is special: Bloodworms + Water only
+            cHtml += taskItem('c1', 'Water Change', 'Perform a 30% water change.', IMG.bucket);
+            cHtml += taskItem('c2', 'Bloodworms', 'One cube from freezer AFTER water change.', IMG.worm, 'DO NOT FEED ANYTHING ELSE TODAY');
+            cHtml += taskItem('c3', 'Filter Sponges', 'Clean in bucket with dirty tank water.', IMG.filter, 'EVERY OTHER SUNDAY');
+        } else {
+            // Weekdays
+            cHtml += taskItem('c4', 'Betta Food (Morning)', 'A pinch of tiny pellets.', IMG.shrimp_icon);
+            cHtml += taskItem('c5', 'White Food', '1-2 pieces. Wait if yesterday\'s are visible.', IMG.glass, 'Check before adding');
+            cHtml += taskItem('c6', 'Fish Flakes', 'Fairly large pinch of regular flakes.', IMG.fish);
+            cHtml += taskItem('c7', 'Loach Pellets', '5 large pellets from the bag.', IMG.ziplock, 'EVERY OTHER DAY');
+            
+            if(dayIndex === 2 || dayIndex === 5) cHtml += taskItem('c8', 'Fertilizer', '2 full squirts of the big white bottle.', IMG.spray);
+            
+            cHtml += taskItem('c9', 'Betta Food (Night)', 'A pinch of tiny pellets.', IMG.shrimp_icon);
+        }
+
+        shrimpList.innerHTML = sHtml;
+        communityList.innerHTML = cHtml;
+    }
+
+    function taskItem(id, title, desc, icon, warn = "") {
+        const key = `tank_task_${id}_${new Date().toDateString()}`;
+        const isDone = localStorage.getItem(key) === 'true' ? 'done' : '';
+        return `
+            <div class="task-card ${isDone}" onclick="toggleTask('${id}', this)">
+                <div class="icon-box"><img src="${icon}"></div>
+                <div class="task-info">
+                    <div class="task-title">${title}</div>
+                    <div class="task-desc">${desc}</div>
+                    ${warn ? `<span class="warning">${warn}</span>` : ''}
+                </div>
+                <div class="checkbox"></div>
+            </div>
+        `;
+    }
+
+    function toggleTask(id, el) {
+        const key = `tank_task_${id}_${new Date().toDateString()}`;
+        const currentlyDone = el.classList.contains('done');
+        if(currentlyDone) {
+            el.classList.remove('done');
+            localStorage.removeItem(key);
+        } else {
+            el.classList.add('done');
+            localStorage.setItem(key, 'true');
+        }
+    }
+
+    function showScreen(id, btn) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function resetDay(tank) {
+        if(confirm("Reset all checks for today?")) {
+            const prefix = tank === 'shrimp' ? 'tank_task_s' : 'tank_task_c';
+            const today = new Date().toDateString();
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.includes(prefix) && key.includes(today)) {
+                    localStorage.removeItem(key);
+                    i--;
+                }
+            }
+            renderTasks();
+        }
+    }
+
+    renderTasks();
+</script>
+
+</body>
+</html>
